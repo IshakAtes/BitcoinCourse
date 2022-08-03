@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quandl</title>
+    <script>
+        const API_KEY = 'Wq21koWsEou7oMwoxLyx';
+
+        async function loadCourse(){
+            let startDate = '2022-07-29';
+            let endDate = '2022-07-29';
+            
+            let url = `https://data.nasdaq.com/api/v3/datasets/BCHAIN/MKPRU?start_date=${startDate}&end_date=${endDate}&api_key=Wq21koWsEou7oMwoxLyx`;
+            let response = await fetch(url);
+            let responseAsJson = await response.json();
+            // console.log('API answers:', responseAsJson.dataset.data,0) // Wass ist der Unterschied zwischen dem unteren ConsoleLog und diesem // und wie bekomme ich die 0 Stelle vom Array
+            console.log('API answers:', responseAsJson['dataset']['data'][0])
+            console.log('API answers:', responseAsJson['dataset'])
+            showBitcoinToday(responseAsJson);
+        }
+
+        function showBitcoinToday(responseAsJson){
+            let bitcoinToday = responseAsJson['dataset']['data'][0][1];
+            document.getElementById('bitcoinToday').innerHTML = bitcoinToday;
+        }
+
+        // console.log(new Date().toISOString().slice(0, 10))
+    </script>
+</head>
+<body onload="loadCourse()">
+
+    <h1>Was kostet ein Bitcoin aktuell?</h1>
+
+    <div>Aktuell kostet ein Bitcoin <b id="bitcoinToday">60.000</b> USD</div>
+    
+</body>
+</html>
