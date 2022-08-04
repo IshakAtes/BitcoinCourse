@@ -11,6 +11,11 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            gap: 60px;
+        }
+
+        canvas {
+            width: 900px !important;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
@@ -22,38 +27,48 @@
         
         async function loadCourse(){
             for (let index = 0; index < days.length; index++) {
-                let elementFromDays = days[index];
-                console.log(elementFromDays)
-                let today = new Date();
+                let elementFromDays = days[index]; // Last 14 Days
+                console.log(elementFromDays) 
 
+                let today = new Date();
                 today.setDate(new Date().getDate() - elementFromDays);
-                currentDates.push(today)
-                console.log(currentDates[index])
+                var year = today.getFullYear();
+                var mes = today.getMonth()+1;
+                var dia = today.getDate();
+                var fecha =dia+"-"+mes+"-"+year; // SHOW ONLY THE DATE WITHOUT THE TIMESTAMP
+                currentDates.push(fecha)
+                console.log(fecha);
+
                 let startDate = currentDates[index];
                 let endDate = currentDates[index];
                 let url = `https://data.nasdaq.com/api/v3/datasets/BCHAIN/MKPRU?start_date=${startDate}&end_date=${endDate}&api_key=Wq21koWsEou7oMwoxLyx`;
                 let response = await fetch(url);
                 let responseAsJson = await response.json();
-                showBitcoinToday(responseAsJson, index);   
+                let bitcoinToday = responseAsJson['dataset']['data'][0][1];
+                courses.push(bitcoinToday)
             }
+            showBitcoinToday();
         }
 
-        function showBitcoinToday(responseAsJson, index){
-            let bitcoinToday = responseAsJson['dataset']['data'][0][1];
-            courses.push(bitcoinToday)
-            document.getElementById('bitcoinToday').innerHTML = bitcoinToday;
-            console.log('Course of the day ' + courses[index])
+        function showBitcoinToday(){
+            document.getElementById('bitcoinToday').innerHTML = courses[0];
+            console.log(courses)
+            console.log(courses[0])
+            
+            currentDates.reverse();
+            console.log(currentDates);
             chart();
         }
 
         
-        function chart(index) {
+        function chart() {
+            document.getElementById('canvasLoad').innerHTML = `<canvas id="myChart" style="width:100%;max-width:1000px; width="500px"></canvas>`;
             new Chart("myChart", {
             type: "line",
             data: {
                 labels: currentDates,
                 datasets: [{
-                data: [courses[14],courses[13],courses[12],courses[11],courses[10],courses[9],courses[8],courses[7],courses[6],courses[5],courses[4],courses[3],courses[2],courses[1]],
+                data: [courses[13],courses[12],courses[11],courses[10],courses[9],courses[8],courses[7],courses[6],courses[5],courses[4],courses[3],courses[2],courses[1],courses[0]],
                 borderColor: "red",
                 fill: false
                 }]
@@ -72,7 +87,9 @@
 
         <div>Aktuell kostet ein Bitcoin <b id="bitcoinToday">60.000</b> USD</div>
 
-        <canvas id="myChart" style="width:100%;max-width:1000px"></canvas>
+        <div id="canvasLoad">
+            <h5>Chart wird geladen ...</h5>
+        </div>
     </div>
     
 </body>
