@@ -5,61 +5,75 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quandl</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
     <script>
         const API_KEY = 'Wq21koWsEou7oMwoxLyx';
-
-        // =============================CALCULATE DATE FIRST METHOD ======================================
-
-        // function dateConfiguration(){
-        //     var today = new Date();
-        //     var day =  String(today.getDate()) -1
-        //     var dd = (String(day).padStart(2, '0'));
-        //     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-        //     var yyyy = today.getFullYear();
-
-        //     today = yyyy + '-' + mm + '-' + dd;
-        //     console.log(today)
-        //     loadCourse(today);
-
-            /// ADD THIS TWO VARIABLE TO FUNCTION loadCourse(today) / to make it functionally and body onload="dateConfiguration()"
-            ///            let startDate = today;
-            ///            let endDate = today;
-
-        // }
-
-        // =============================CALCULATE DATE SECOND METHOD ======================================
+        let courses = [];
+        let currentDates = [];
+        let days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14];
         
         async function loadCourse(){
-            let today = new Date();
-            today.setDate(new Date().getDate() - 1);
-            console.log(today)
-            // SHOW ONLY DATE WITHOUT TIMESTAMP
-            // var tod = today;
-            // var year = tod.getFullYear();
-            // var mes = tod.getMonth()+1;
-            // var dia = tod.getDate();
-            // var fecha =year+"-"+mes+"-"+dia;
-            // console.log(fecha);
-            let startDate = today;
-            let endDate = today;   
-            let url = `https://data.nasdaq.com/api/v3/datasets/BCHAIN/MKPRU?start_date=${startDate}&end_date=${endDate}&api_key=Wq21koWsEou7oMwoxLyx`;
-            let response = await fetch(url);
-            let responseAsJson = await response.json();
-            console.log('API answers:', responseAsJson['dataset'])
-            showBitcoinToday(responseAsJson);
+            for (let index = 0; index < days.length; index++) {
+                let elementFromDays = days[index];
+                console.log(elementFromDays)
+                let today = new Date();
+
+                today.setDate(new Date().getDate() - elementFromDays);
+                currentDates.push(today)
+                console.log(currentDates[index])
+                let startDate = currentDates[index];
+                let endDate = currentDates[index];
+                let url = `https://data.nasdaq.com/api/v3/datasets/BCHAIN/MKPRU?start_date=${startDate}&end_date=${endDate}&api_key=Wq21koWsEou7oMwoxLyx`;
+                let response = await fetch(url);
+                let responseAsJson = await response.json();
+                showBitcoinToday(responseAsJson, index);   
+            }
         }
 
-        function showBitcoinToday(responseAsJson){
+        function showBitcoinToday(responseAsJson, index){
             let bitcoinToday = responseAsJson['dataset']['data'][0][1];
+            courses.push(bitcoinToday)
             document.getElementById('bitcoinToday').innerHTML = bitcoinToday;
+            console.log('Course of the day ' + courses[index])
+            chart();
+        }
+
+        
+        function chart(index) {
+            new Chart("myChart", {
+            type: "line",
+            data: {
+                labels: currentDates,
+                datasets: [{
+                data: [courses[14],courses[13],courses[12],courses[11],courses[10],courses[9],courses[8],courses[7],courses[6],courses[5],courses[4],courses[3],courses[2],courses[1]],
+                borderColor: "red",
+                fill: false
+                }]
+            },
+            options: {
+                legend: {display: false}
+            }
+            });
         }
     </script>
 </head>
 <body onload="loadCourse()">
 
-    <h1>Was kostet ein Bitcoin aktuell?</h1>
+    <div class="container">
+        <h1>Was kostet ein Bitcoin aktuell?</h1>
 
-    <div>Aktuell kostet ein Bitcoin <b id="bitcoinToday">60.000</b> USD</div>
+        <div>Aktuell kostet ein Bitcoin <b id="bitcoinToday">60.000</b> USD</div>
+
+        <canvas id="myChart" style="width:100%;max-width:1000px"></canvas>
+    </div>
     
 </body>
 </html>
