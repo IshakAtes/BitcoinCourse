@@ -8,15 +8,43 @@
     <script>
         const API_KEY = 'Wq21koWsEou7oMwoxLyx';
 
+        // =============================CALCULATE DATE FIRST METHOD ======================================
+
+        // function dateConfiguration(){
+        //     var today = new Date();
+        //     var day =  String(today.getDate()) -1
+        //     var dd = (String(day).padStart(2, '0'));
+        //     var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        //     var yyyy = today.getFullYear();
+
+        //     today = yyyy + '-' + mm + '-' + dd;
+        //     console.log(today)
+        //     loadCourse(today);
+
+            /// ADD THIS TWO VARIABLE TO FUNCTION loadCourse(today) / to make it functionally and body onload="dateConfiguration()"
+            ///            let startDate = today;
+            ///            let endDate = today;
+
+        // }
+
+        // =============================CALCULATE DATE SECOND METHOD ======================================
+        
         async function loadCourse(){
-            let startDate = '2022-07-29';
-            let endDate = '2022-07-29';
-            
+            let today = new Date();
+            today.setDate(new Date().getDate() - 1);
+            console.log(today)
+            // SHOW ONLY DATE WITHOUT TIMESTAMP
+            // var tod = today;
+            // var year = tod.getFullYear();
+            // var mes = tod.getMonth()+1;
+            // var dia = tod.getDate();
+            // var fecha =year+"-"+mes+"-"+dia;
+            // console.log(fecha);
+            let startDate = today;
+            let endDate = today;   
             let url = `https://data.nasdaq.com/api/v3/datasets/BCHAIN/MKPRU?start_date=${startDate}&end_date=${endDate}&api_key=Wq21koWsEou7oMwoxLyx`;
             let response = await fetch(url);
             let responseAsJson = await response.json();
-            // console.log('API answers:', responseAsJson.dataset.data,0) // Wass ist der Unterschied zwischen dem unteren ConsoleLog und diesem // und wie bekomme ich die 0 Stelle vom Array
-            console.log('API answers:', responseAsJson['dataset']['data'][0])
             console.log('API answers:', responseAsJson['dataset'])
             showBitcoinToday(responseAsJson);
         }
@@ -25,8 +53,6 @@
             let bitcoinToday = responseAsJson['dataset']['data'][0][1];
             document.getElementById('bitcoinToday').innerHTML = bitcoinToday;
         }
-
-        // console.log(new Date().toISOString().slice(0, 10))
     </script>
 </head>
 <body onload="loadCourse()">
